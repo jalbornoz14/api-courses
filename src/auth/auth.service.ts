@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async loginBackoffice(user: any) {
-    if (user.profile.name !== 'backoffice') {
+    if (user.profile.name !== 'Administrador') {
       throw new UnauthorizedException();
     }
     const payload = { username: user.username, sub: user.id };

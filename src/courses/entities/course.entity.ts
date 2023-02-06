@@ -26,4 +26,5 @@ export class Course {
 
   califications: number;
   promediun: number;
+  calificationByUser: number;
 }

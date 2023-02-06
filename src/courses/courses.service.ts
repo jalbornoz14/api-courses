@@ -113,6 +113,20 @@ export class CoursesService {
     const total = sum / califiacation.length;
     findCourse.promediun = total ? total : 0;
 
+    const calificationByUser = await this.calificationCourseRepository.findOne({
+      where: {
+        idUser,
+        idCourse: findCourse.id,
+      },
+    });
+
+    if (!calificationByUser) {
+      findCourse.calificationByUser = null;
+      return findCourse;
+    }
+
+    findCourse.calificationByUser = calificationByUser.calification;
+
     return findCourse;
   }
 

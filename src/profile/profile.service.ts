@@ -16,8 +16,8 @@ export class ProfileService {
     return this.profileRepository.save(profile);
   }
 
-  findAll() {
-    return `This action returns all profile`;
+  async findAll() {
+    return await this.profileRepository.find();
   }
 
   findOne(id: number) {
