@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CalificationCourseDto } from './dto/calification.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -14,6 +15,7 @@ export class CoursesService {
     private coursesRepository: Repository<Course>,
     @InjectRepository(CalificationCourse)
     private calificationCourseRepository: Repository<CalificationCourse>,
+    private usersService: UsersService,
   ) {}
   create(createCourseDto: CreateCourseDto) {
     const course = this.coursesRepository.create(createCourseDto);
@@ -49,6 +51,19 @@ export class CoursesService {
 
   async findAll() {
     const courses = await this.coursesRepository.find();
+
+    for (const course of courses) {
+      const califiacation = await this.calificationCourseRepository.find({
+        where: { idCourse: course.id },
+      });
+
+      course.califications = califiacation.length;
+      let sum = 0;
+      califiacation.map((e) => (sum += parseFloat(e.calification.toString())));
+      const total = sum / califiacation.length;
+      course.promediun = total ? total : 0;
+    }
+
     if (!courses) {
       return {
         message: 'Courses not found',
@@ -66,11 +81,45 @@ export class CoursesService {
         success: false,
       };
     }
+    const califiacation = await this.calificationCourseRepository.find({
+      where: { idCourse: course.id },
+    });
+
+    course.califications = califiacation.length;
+    let sum = 0;
+    califiacation.map((e) => (sum += parseFloat(e.calification.toString())));
+    const total = sum / califiacation.length;
+    course.promediun = total ? total : 0;
     return course;
   }
 
+  async findCoursesByUser(id, idUser) {
+    const findUser = await this.usersService.findOne(idUser);
+    const courses = findUser.courses;
+    const findCourse = courses.find((e) => e.id === id);
+    if (!findCourse) {
+      return {
+        message: 'Course not found',
+        success: false,
+      };
+    }
+    const califiacation = await this.calificationCourseRepository.find({
+      where: { idCourse: findCourse.id },
+    });
+
+    findCourse.califications = califiacation.length;
+    let sum = 0;
+    califiacation.map((e) => (sum += parseFloat(e.calification.toString())));
+    const total = sum / califiacation.length;
+    findCourse.promediun = total ? total : 0;
+
+    return findCourse;
+  }
+
   async update(id: number, updateCourseDto: UpdateCourseDto) {
+    // console.log("🚀 ~ file: courses.service.ts:120 ~ CoursesService ~ update ~ updateCourseDto", updateCourseDto)
     const findCourse = await this.findOne(id);
+    // console.log("🚀 ~ file: courses.service.ts:122 ~ CoursesService ~ update ~ findCourse", findCourse)
     if (!findCourse) {
       return {
         message: 'Course not found',
@@ -78,7 +127,11 @@ export class CoursesService {
       };
     }
 
-    this.coursesRepository.update(id, updateCourseDto);
+    delete updateCourseDto.califications;
+    delete updateCourseDto.promediun;
+
+    await this.coursesRepository.update(id, updateCourseDto);
+
     return {
       message: 'Course updated successfully',
       success: true,

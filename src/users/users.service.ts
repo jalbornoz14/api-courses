@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Course } from 'src/courses/entities/course.entity';
 
@@ -90,14 +89,19 @@ export class UsersService {
   //   return `This action returns all users`;
   // }
 
-  findOne(id: number) {
-    return this.usersRepository.findOne({
+  async findOne(id: number) {
+    const { password, ...user } = await this.usersRepository.findOne({
       where: { id },
-      relations: ['courses'],
+      relations: ['courses', 'profile'],
     });
+
+    return user;
   }
   findOneByUserName(username: string) {
-    return this.usersRepository.findOneBy({ username });
+    return this.usersRepository.findOne({
+      where: { username },
+      relations: ['profile'],
+    });
   }
 
   // update(id: number, updateUserDto: UpdateUserDto) {

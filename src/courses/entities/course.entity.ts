@@ -23,4 +23,7 @@ export class Course {
 
   @ManyToMany((type) => User, (user) => user.courses)
   user: User;
+
+  califications: number;
+  promediun: number;
 }

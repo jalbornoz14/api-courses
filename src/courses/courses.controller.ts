@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Put } from '@nestjs/common/decorators';
 import { CoursesService } from './courses.service';
 import { CalificationCourseDto } from './dto/calification.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -17,7 +18,6 @@ export class CoursesController {
   createNewCalification(@Body() calificationCourse: CalificationCourseDto) {
     return this.coursesService.createNewCalification(calificationCourse);
   }
-  
 
   @Get()
   findAll() {
@@ -29,7 +29,12 @@ export class CoursesController {
     return this.coursesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Get(':id/user/:userId')
+  findCoursesByUser(@Param('id') id: string, @Param('userId') userId: string) {
+    return this.coursesService.findCoursesByUser(+id, +userId);
+  }
+
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.coursesService.update(+id, updateCourseDto);
   }

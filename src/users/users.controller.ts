@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Put,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -15,7 +24,10 @@ export class UsersController {
   }
 
   @Put('suscription/:id')
-  suscriptionCourse(@Param('id') id: string, @Body('course') courses: Array<number>) {
+  suscriptionCourse(
+    @Param('id') id: string,
+    @Body('course') courses: Array<number>,
+  ) {
     return this.usersService.suscriptionCourse(+id, courses);
   }
 
@@ -29,10 +41,10 @@ export class UsersController {
   //   return this.usersService.findAll();
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:16 As development
+FROM node:18 As development
 
 # Create app directory
 WORKDIR /usr/src/app
